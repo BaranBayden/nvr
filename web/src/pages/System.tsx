@@ -1,13 +1,10 @@
 import Heading from "@/components/ui/heading";
-import { FrigateConfig } from "@/types/frigateConfig";
 import useSWR from "swr";
 import { FrigateStats } from "@/types/stats";
 import { useMemo } from "react";
 import SystemGraph from "@/components/graph/SystemGraph";
 
 function System() {
-  const { data: config } = useSWR<FrigateConfig>("config");
-
   // stats
   const { data: statsHistory } = useSWR<FrigateStats[]>("stats/history", {
     revalidateOnFocus: false,
