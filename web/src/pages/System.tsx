@@ -104,7 +104,7 @@ function System() {
           series[key] = { name: key, data: [] };
         }
 
-        series[key].data.push({ x: statTime, y: stats.gpu });
+        series[key].data.push({ x: statTime, y: stats.mem });
       });
     });
     return Object.values(series);
@@ -178,7 +178,7 @@ function System() {
         />
         <SystemGraph
           graphId="detector-usages"
-          title="CPU / Memory %"
+          title="CPU / Memory"
           unit="%"
           data={cpuMemSeries}
         />
@@ -189,13 +189,13 @@ function System() {
           <div className="grid grid-cols-1 md:grid-cols-2">
             <SystemGraph
               graphId="detector-inference"
-              title="Inference Speed"
-              unit="ms"
+              title="GPU Usage"
+              unit="%"
               data={gpuSeries}
             />
             <SystemGraph
               graphId="detector-usages"
-              title="CPU / Memory %"
+              title="GPU Memory"
               unit="%"
               data={gpuMemSeries}
             />
@@ -206,13 +206,13 @@ function System() {
       <div className="grid grid-cols-1 md:grid-cols-2">
         <SystemGraph
           graphId="process-cpu"
-          title="CPU %"
+          title="CPU"
           unit="%"
           data={otherProcessCpuSeries}
         />
         <SystemGraph
           graphId="process-mem"
-          title="Memory %"
+          title="Memory"
           unit="%"
           data={otherProcessMemSeries}
         />
