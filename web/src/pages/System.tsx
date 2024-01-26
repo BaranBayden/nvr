@@ -5,8 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 import SystemGraph from "@/components/graph/SystemGraph";
 import { useFrigateStats } from "@/api/ws";
 import TimeAgo from "@/components/dynamic/TimeAgo";
+import { FrigateConfig } from "@/types/frigateConfig";
 
 function System() {
+  const { data: config } = useSWR<FrigateConfig>("config");
+
   // stats
   const { data: initialStats } = useSWR<FrigateStats[]>("stats/history", {
     revalidateOnFocus: false,
@@ -158,6 +161,82 @@ function System() {
     });
     return Object.values(series);
   }, [statsHistory]);
+  const cameraCpuSeries = useMemo(() => {
+    if (!statsHistory || statsHistory.length == 0) {
+      return {};
+    }
+
+    const series: {
+      [cam: string]: {
+        [key: string]: { name: string; data: { x: any; y: any }[] };
+      };
+    } = {};
+
+    statsHistory.forEach((stats) => {
+      const statTime = new Date(stats.service.last_updated * 1000);
+
+      Object.entries(stats.cameras).forEach(([key, camStats]) => {
+        if (!(key in series)) {
+          const camName = key.replaceAll("_", " ");
+          series[key] = {};
+          series[key]["ffmpeg"] = { name: `${camName} ffmpeg`, data: [] };
+          series[key]["capture"] = { name: `${camName} capture`, data: [] };
+          series[key]["detect"] = { name: `${camName} detect`, data: [] };
+        }
+
+        series[key]["ffmpeg"].data.push({
+          x: statTime,
+          y: stats.cpu_usages[camStats.ffmpeg_pid.toString()].cpu,
+        });
+        series[key]["capture"].data.push({
+          x: statTime,
+          y: stats.cpu_usages[camStats.capture_pid.toString()].cpu,
+        });
+        series[key]["detect"].data.push({
+          x: statTime,
+          y: stats.cpu_usages[camStats.pid.toString()].cpu,
+        });
+      });
+    });
+    return series;
+  }, [statsHistory]);
+  const cameraFpsSeries = useMemo(() => {
+    if (!statsHistory) {
+      return {};
+    }
+
+    const series: {
+      [cam: string]: {
+        [key: string]: { name: string; data: { x: any; y: any }[] };
+      };
+    } = {};
+
+    statsHistory.forEach((stats) => {
+      const statTime = new Date(stats.service.last_updated * 1000);
+
+      Object.entries(stats.cameras).forEach(([key, camStats]) => {
+        if (!(key in series)) {
+          const camName = key.replaceAll("_", " ");
+          series[key] = {};
+          series[key]["det"] = { name: `${camName} detections`, data: [] };
+          series[key]["skip"] = {
+            name: `${camName} skipped detections`,
+            data: [],
+          };
+        }
+
+        series[key]["det"].data.push({
+          x: statTime,
+          y: camStats.detection_fps,
+        });
+        series[key]["skip"].data.push({
+          x: statTime,
+          y: camStats.skipped_fps,
+        });
+      });
+    });
+    return series;
+  }, [statsHistory]);
   const otherProcessCpuSeries = useMemo(() => {
     if (!statsHistory) {
       return [];
@@ -251,7 +330,7 @@ function System() {
       {gpuSeries.length > 0 && (
         <>
           <Heading as="h4">GPUs</Heading>
-          <div className="grid grid-cols-1 sm:grid-cols-2">
+          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2">
             <SystemGraph
               graphId="detector-inference"
               title="GPU Usage"
@@ -267,6 +346,32 @@ function System() {
           </div>
         </>
       )}
+      <Heading as="h4">Cameras</Heading>
+      <div className="grid grid-cols-1 sm:grid-cols-2">
+        {config &&
+          Object.values(config.cameras).map((camera) => {
+            if (camera.enabled) {
+              return (
+                <div key={camera.name} className="grid grid-cols-2">
+                  <SystemGraph
+                    graphId={`${camera.name}-cpu`}
+                    title={`${camera.name.replaceAll("_", " ")} CPU`}
+                    unit="%"
+                    data={Object.values(cameraCpuSeries[camera.name] || {})}
+                  />
+                  <SystemGraph
+                    graphId={`${camera.name}-fps`}
+                    title={`${camera.name.replaceAll("_", " ")} FPS`}
+                    unit=""
+                    data={Object.values(cameraFpsSeries[camera.name] || {})}
+                  />
+                </div>
+              );
+            }
+
+            return null;
+          })}
+      </div>
       <Heading as="h4">Other Processes</Heading>
       <div className="grid grid-cols-1 sm:grid-cols-2">
         <SystemGraph

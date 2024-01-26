@@ -52,7 +52,6 @@ export default function SystemGraph({
         },
       }}
       series={data}
-      height="100%"
     />
   );
 }
