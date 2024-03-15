@@ -21,4 +21,4 @@ objects:
 
 ## Restricting alerts to specific zones
 
-By default an event will be marked as an alert if any `objects -> alert` is detected anywhere in the camera frame. You will likely want to configure events to only be marked as an alert when the object enters an area of interest, [see the zone docs for more information](./zones.mdzones#restricting-alerts-to-specific-zones)
+By default an event will be marked as an alert if any `objects -> alert` is detected anywhere in the camera frame. You will likely want to configure events to only be marked as an alert when the object enters an area of interest, [see the zone docs for more information](./zones.md#restricting-alerts-to-specific-zones)
