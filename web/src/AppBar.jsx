@@ -61,13 +61,13 @@ export default function AppBar() {
           <MenuItem icon={LightModeIcon} label="Light" value="light" onSelect={handleSelectDarkMode} />
           <MenuItem icon={DarkModeIcon} label="Dark" value="dark" onSelect={handleSelectDarkMode} />
           <MenuSeparator />
-          <MenuItem icon={FrigateRestartIcon} label="Restart Frigate" onSelect={handleRestart} />
+          <MenuItem icon={FrigateRestartIcon} label="Restart System" onSelect={handleRestart} />
         </Menu>
       ) : null}
       {showDialog ? (
         <Prompt
           onDismiss={handleDismissRestartDialog}
-          title="Restart Frigate"
+          title="Restart System"
           text="Are you sure?"
           actions={[
             { text: 'Yes', color: 'red', onClick: handleClickRestartDialog },
