@@ -1,8 +1,8 @@
 <p align="center">
-  <img align="center" alt="logo" src="docs/static/img/frigate.png">
+
 </p>
 
-# Frigate - NVR With Realtime Object Detection for IP Cameras
+# NVR With Realtime Object Detection for IP Cameras
 
 A complete and local NVR designed for [Home Assistant](https://www.home-assistant.io) with AI object detection. Uses OpenCV and Tensorflow to perform realtime object detection locally for IP cameras.
 
@@ -22,7 +22,6 @@ Use of a [Google Coral Accelerator](https://coral.ai/products/) is optional, but
 ## Documentation
 
 View the documentation at https://docs.frigate.video
-
 ## Donations
 
 If you would like to make a donation to support development, please use [Github Sponsors](https://github.com/sponsors/blakeblackshear).
